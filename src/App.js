@@ -13,14 +13,16 @@ const App = () => {
       const response = await fetch('http://localhost:8080/minidbms/executeSQL', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ sql: query })
+        body: query
       });
+      
 
       if (response.ok) {
-        const data = await response.json();
-        setQueryResult(JSON.stringify(data)); 
+       const data = await response.text(); // Response is expected to be text, not JSON
+        setQueryResult(data);
       } else {
         setQueryResult('Error executing the query');
       }
