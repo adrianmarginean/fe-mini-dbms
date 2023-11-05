@@ -20,7 +20,7 @@ const App = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setQueryResult(JSON.stringify(data)); // Assuming the response is JSON; you may adjust accordingly
+        setQueryResult(JSON.stringify(data)); 
       } else {
         setQueryResult('Error executing the query');
       }
