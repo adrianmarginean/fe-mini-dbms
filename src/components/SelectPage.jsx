@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const SelectPage = () => {
-  const [tableName, setTableName] = useState('');
+  const [tableName, setTableName] = useState("");
   const [tableColumns, setTableColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tables, setTables] = useState([]);
@@ -19,10 +19,10 @@ const SelectPage = () => {
 
   const fetchTables = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/minidbms/tables');
+      const response = await axios.get("http://localhost:8080/minidbms/tables");
       setTables(response.data);
     } catch (error) {
-      console.error('Error fetching tables:', error);
+      console.error("Error fetching tables:", error);
     }
   };
 
@@ -43,7 +43,7 @@ const SelectPage = () => {
   };
 
   const addWhereCondition = () => {
-    setWhereConditions([...whereConditions, { column: '', operation: '=', value: '' }]);
+    setWhereConditions([...whereConditions, { column: "", operation: "=", value: "" }]);
   };
 
   const updateWhereCondition = (index, field, value) => {
@@ -60,47 +60,55 @@ const SelectPage = () => {
 
   const generateSelectQuery = () => {
     if (tableName && selectedColumns.length > 0) {
-      const selectedColumnsString = selectedColumns.includes('*')
-        ? '*'
-        : selectedColumns.join(', ');
+      const selectedColumnsString = selectedColumns.includes("*")
+        ? "*"
+        : selectedColumns.join(", ");
 
-      let query = `SELECT ${distinct ? 'DISTINCT ' : ''}${selectedColumnsString} FROM ${tableName}`;
+      let query = `SELECT ${distinct ? "DISTINCT " : ""}${selectedColumnsString} FROM ${tableName}`;
 
       if (whereConditions.length > 0) {
         const whereClause = whereConditions
           .map((condition) => `${condition.column} ${condition.operation} ${condition.value}`)
-          .join(' AND ');
+          .join(" AND ");
 
         query += ` WHERE ${whereClause}`;
       }
 
-      query += ';';
+      query += ";";
 
       return query;
     }
-    return '';
+    return "";
   };
 
   const runQuery = async () => {
     setQueryExecuting(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/minidbms/select', {
-        collectionName: tableName,
-        columns: selectedColumns,
-        whereConditions,
+      const response = await axios.post("http://localhost:8080/minidbms/select", {
+        columns: selectedColumns[0] === "*" ? tableColumns : selectedColumns,
+        condition: whereConditions.length === 0 ? "": generateSelectQuery().split("WHERE")[1].slice(0, -1), // Assuming generateSelectQuery returns the condition string
+        table: tableName,
+        database: "students", // Provide the actual database name here
       });
 
       setQueryResult(response.data);
     } catch (error) {
-      console.error('Error executing query:', error);
+      console.error("Error executing query:", error);
     } finally {
       setQueryExecuting(false);
     }
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        maxWidth: "800px",
+        margin: "0 auto",
+        padding: "20px",
+      }}
+    >
       <h2>Select Page</h2>
 
       <label>
@@ -127,7 +135,9 @@ const SelectPage = () => {
           <select
             multiple
             value={selectedColumns}
-            onChange={(e) => handleColumnSelection(Array.from(e.target.selectedOptions, (option) => option.value))}
+            onChange={(e) =>
+              handleColumnSelection(Array.from(e.target.selectedOptions, (option) => option.value))
+            }
           >
             <option value="*">All Columns (*)</option>
             {tableColumns.map((column) => (
@@ -145,10 +155,10 @@ const SelectPage = () => {
           <div>
             <h3>Where Conditions</h3>
             {whereConditions.map((condition, index) => (
-              <div key={index} style={{ marginBottom: '10px' }}>
+              <div key={index} style={{ marginBottom: "10px" }}>
                 <select
                   value={condition.column}
-                  onChange={(e) => updateWhereCondition(index, 'column', e.target.value)}
+                  onChange={(e) => updateWhereCondition(index, "column", e.target.value)}
                 >
                   <option value="">Select a column</option>
                   {tableColumns.map((column) => (
@@ -160,18 +170,18 @@ const SelectPage = () => {
 
                 <select
                   value={condition.operation}
-                  onChange={(e) => updateWhereCondition(index, 'operation', e.target.value)}
+                  onChange={(e) => updateWhereCondition(index, "operation", e.target.value)}
                 >
                   <option value="=">=</option>
-                  <option value="<">{'<'}</option>
-                  <option value=">">{'>'}</option>
+                  <option value="<">{"<"}</option>
+                  <option value=">">{">"}</option>
                   {/* Add more operations as needed */}
                 </select>
 
                 <input
                   type="text"
                   value={condition.value}
-                  onChange={(e) => updateWhereCondition(index, 'value', e.target.value)}
+                  onChange={(e) => updateWhereCondition(index, "value", e.target.value)}
                 />
 
                 <button onClick={() => removeWhereCondition(index)}>Remove</button>
@@ -192,22 +202,22 @@ const SelectPage = () => {
 
           {queryExecuting && <p>Executing query...</p>}
 
-          {queryResult.length > 0 && (
+          {queryResult.headers && queryResult.rows && (
             <div>
               <h3>Query Result</h3>
               <table border="1">
                 <thead>
                   <tr>
-                    {selectedColumns.map((column) => (
+                    {queryResult.headers.map((column) => (
                       <th key={column}>{column}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {queryResult.map((row, rowIndex) => (
+                  {queryResult.rows.map((row, rowIndex) => (
                     <tr key={rowIndex}>
-                      {selectedColumns.map((column) => (
-                        <td key={column}>{row[column]}</td>
+                      {row.map((cell, columnIndex) => (
+                        <td key={queryResult.headers[columnIndex]}>{cell}</td>
                       ))}
                     </tr>
                   ))}
