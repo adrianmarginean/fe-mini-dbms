@@ -87,9 +87,14 @@ const SelectPage = () => {
     try {
       const response = await axios.post("http://localhost:8080/minidbms/select", {
         columns: selectedColumns[0] === "*" ? tableColumns : selectedColumns,
-        condition: whereConditions.length === 0 ? "": generateSelectQuery().split("WHERE")[1].slice(0, -1), // Assuming generateSelectQuery returns the condition string
+        condition: whereConditions.length === 0 ? "" : generateSelectQuery().split("WHERE")[1].slice(0, -1),
         table: tableName,
         database: "students", // Provide the actual database name here
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          // Remove 'Access-Control-Allow-Origin' header from the client side
+        },
       });
 
       setQueryResult(response.data);

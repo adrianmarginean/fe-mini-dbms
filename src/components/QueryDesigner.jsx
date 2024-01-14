@@ -33,11 +33,24 @@ const QueryDesigner = () => {
     }
   };
 
-  const insert1M = async () => {
+  const insert1MStudents = async () => {
     try {
       setLoading(true);
       // Replace the URL with the actual URL of your backend API endpoint
-      await axios.post('http://localhost:8080/minidbms/1m');
+      await axios.post('http://localhost:8080/minidbms/1m/Students');
+      console.log('Insertion initiated successfully');
+    } catch (error) {
+      console.error('Error initiating insertion:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const insert1MGroups = async () => {
+    try {
+      setLoading(true);
+      // Replace the URL with the actual URL of your backend API endpoint
+      await axios.post('http://localhost:8080/minidbms/1m/Groups');
       console.log('Insertion initiated successfully');
     } catch (error) {
       console.error('Error initiating insertion:', error);
@@ -83,7 +96,7 @@ const QueryDesigner = () => {
         <span style={{ display: loading ? 'none' : 'block' }}>Execute Query</span>
       </button>
       <button
-        onClick={insert1M}
+        onClick={insert1MGroups}
         style={{
           backgroundColor: 'darkcyan',
           color: 'white',
@@ -100,8 +113,29 @@ const QueryDesigner = () => {
         disabled={loading}
       >
         {loading && <div className="loader"></div>}
-        <span style={{ display: loading ? 'none' : 'block' }}>Insert 1M</span>
+        <span style={{ display: loading ? 'none' : 'block' }}>Insert 10K Groups</span>
       </button>
+      <button
+        onClick={insert1MStudents}
+        style={{
+          backgroundColor: 'darkcyan',
+          color: 'white',
+          padding: '10px',
+          marginTop: '10px',
+          border: 'none',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          width: '100%',
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        disabled={loading}
+      >
+        {loading && <div className="loader"></div>}
+        <span style={{ display: loading ? 'none' : 'block' }}>Insert 1M Students</span>
+      </button>
+
       <div style={{ marginTop: '20px', padding: '20px', border: '1px solid #ccc', color: 'darkcyan' }}>
         <h3 style={{ marginBottom: '10px' }}>Result</h3>
         <div style={{ fontSize: '16px' }}>{queryResult}</div>
