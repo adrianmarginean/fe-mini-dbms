@@ -89,7 +89,8 @@ const SelectPage = () => {
         columns: selectedColumns[0] === "*" ? tableColumns : selectedColumns,
         condition: whereConditions.length === 0 ? "" : generateSelectQuery().split("WHERE")[1].slice(0, -1),
         table: tableName,
-        database: "students", // Provide the actual database name here
+        database: "students",
+        distinct: distinct
       }, {
         headers: {
           'Content-Type': 'application/json',

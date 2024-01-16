@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import QueryDesigner from "./components/QueryDesigner";
 import SelectPage from "./components/SelectPage";
 import "./App.css";
+import JoinPage from "./components/JoinPage";
 
 const App = () => {
   const [selectedOption, setSelectedOption] = useState("query");
@@ -42,12 +43,14 @@ const App = () => {
         >
           <option value="query">Query Panel</option>
           <option value="select">Select Query</option>
+          <option value="join">Join Tables</option>
         </select>
       </div>
 
       {selectedOption === "query" && <QueryDesigner />}
 
       {selectedOption === "select" && <SelectPage />}
+      {selectedOption === "join" && <JoinPage />}
     </div>
   );
 };
